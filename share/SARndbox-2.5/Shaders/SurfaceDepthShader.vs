@@ -1,6 +1,6 @@
 /***********************************************************************
-Config - Configuration header file for the Augmented Reality Sandbox.
-Copyright (c) 2014-2017 Oliver Kreylos
+SurfaceDepthShader - Shader to render a surface's depth only.
+Copyright (c) 2012-2014 Oliver Kreylos
 
 This file is part of the Augmented Reality Sandbox (SARndbox).
 
@@ -19,15 +19,17 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#ifndef CONFIG_INCLUDED
-#define CONFIG_INCLUDED
+#extension GL_ARB_texture_rectangle : enable
 
-#define CONFIG_CONFIGDIR "/home/patrick/src/SARndbox/etc/SARndbox-2.5"
-#define CONFIG_SHADERDIR "/home/patrick/src/SARndbox/share/SARndbox-2.5/Shaders"
+uniform sampler2DRect depthSampler; // Sampler for the depth image-space elevation texture
+uniform mat4 projectionModelviewDepthProjection; // Combined transformation from depth image space to clip space
 
-#define CONFIG_DEFAULTCONFIGFILENAME "SARndbox.cfg"
-#define CONFIG_DEFAULTBOXLAYOUTFILENAME "BoxLayout.txt"
-#define CONFIG_DEFAULTPROJECTIONMATRIXFILENAME "ProjectorMatrix.dat"
-#define CONFIG_DEFAULTHEIGHTCOLORMAPFILENAME "HeightColorMap.cpt"
-
-#endif
+void main()
+	{
+	/* Get the vertex' depth image-space z coordinate from the texture: */
+	vec4 vertexDic=gl_Vertex;
+	vertexDic.z=texture2DRect(depthSampler,vertexDic.xy).r;
+	
+	/* Transform vertex directly from depth image space to clip space: */
+	gl_Position=projectionModelviewDepthProjection*vertexDic;
+	}

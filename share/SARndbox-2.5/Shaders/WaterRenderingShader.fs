@@ -1,6 +1,7 @@
 /***********************************************************************
-Config - Configuration header file for the Augmented Reality Sandbox.
-Copyright (c) 2014-2017 Oliver Kreylos
+WaterRenderingShader - Shader to render the water level surface of a
+water table.
+Copyright (c) 2014 Oliver Kreylos
 
 This file is part of the Augmented Reality Sandbox (SARndbox).
 
@@ -19,15 +20,12 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#ifndef CONFIG_INCLUDED
-#define CONFIG_INCLUDED
+varying vec4 color; // Color value for Goraud shading
 
-#define CONFIG_CONFIGDIR "/home/patrick/src/SARndbox/etc/SARndbox-2.5"
-#define CONFIG_SHADERDIR "/home/patrick/src/SARndbox/share/SARndbox-2.5/Shaders"
-
-#define CONFIG_DEFAULTCONFIGFILENAME "SARndbox.cfg"
-#define CONFIG_DEFAULTBOXLAYOUTFILENAME "BoxLayout.txt"
-#define CONFIG_DEFAULTPROJECTIONMATRIXFILENAME "ProjectorMatrix.dat"
-#define CONFIG_DEFAULTHEIGHTCOLORMAPFILENAME "HeightColorMap.cpt"
-
-#endif
+void main()
+	{
+	/* Simply assign the interpolated color to the fragment: */
+	if(color.a<0.0025)
+		discard;
+	gl_FragColor=color;
+	}
