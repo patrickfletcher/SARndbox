@@ -1,6 +1,6 @@
 /***********************************************************************
-Config - Configuration header file for the Augmented Reality Sandbox.
-Copyright (c) 2014-2017 Oliver Kreylos
+Water2EulerStepShader - Shader to perform an Euler integration step.
+Copyright (c) 2012 Oliver Kreylos
 
 This file is part of the Augmented Reality Sandbox (SARndbox).
 
@@ -19,15 +19,19 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#ifndef CONFIG_INCLUDED
-#define CONFIG_INCLUDED
+#extension GL_ARB_texture_rectangle : enable
 
-#define CONFIG_CONFIGDIR "/home/patrick/src/SARndbox-2.6/etc/SARndbox-2.6"
-#define CONFIG_SHADERDIR "/home/patrick/src/SARndbox-2.6/share/SARndbox-2.6/Shaders"
+uniform float stepSize;
+uniform float attenuation;
+uniform sampler2DRect quantitySampler;
+uniform sampler2DRect derivativeSampler;
 
-#define CONFIG_DEFAULTCONFIGFILENAME "SARndbox.cfg"
-#define CONFIG_DEFAULTBOXLAYOUTFILENAME "BoxLayout.txt"
-#define CONFIG_DEFAULTPROJECTIONMATRIXFILENAME "ProjectorMatrix.dat"
-#define CONFIG_DEFAULTHEIGHTCOLORMAPFILENAME "HeightColorMap.cpt"
-
-#endif
+void main()
+	{
+	/* Calculate the Euler step: */
+	vec3 q=texture2DRect(quantitySampler,gl_FragCoord.xy).rgb;
+	vec3 qt=texture2DRect(derivativeSampler,gl_FragCoord.xy).rgb;
+	vec3 newQ=q+qt*stepSize;
+	newQ.yz*=attenuation;
+	gl_FragColor=vec4(newQ,0.0);
+	}

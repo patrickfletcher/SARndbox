@@ -1,6 +1,7 @@
 /***********************************************************************
-Config - Configuration header file for the Augmented Reality Sandbox.
-Copyright (c) 2014-2017 Oliver Kreylos
+Water2WaterAdaptShader - Shader to adjust the water surface height to
+the current bathymetry.
+Copyright (c) 2014 Oliver Kreylos
 
 This file is part of the Augmented Reality Sandbox (SARndbox).
 
@@ -19,15 +20,22 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#ifndef CONFIG_INCLUDED
-#define CONFIG_INCLUDED
+#extension GL_ARB_texture_rectangle : enable
 
-#define CONFIG_CONFIGDIR "/home/patrick/src/SARndbox-2.6/etc/SARndbox-2.6"
-#define CONFIG_SHADERDIR "/home/patrick/src/SARndbox-2.6/share/SARndbox-2.6/Shaders"
+uniform sampler2DRect bathymetrySampler;
+uniform sampler2DRect newQuantitySampler;
 
-#define CONFIG_DEFAULTCONFIGFILENAME "SARndbox.cfg"
-#define CONFIG_DEFAULTBOXLAYOUTFILENAME "BoxLayout.txt"
-#define CONFIG_DEFAULTPROJECTIONMATRIXFILENAME "ProjectorMatrix.dat"
-#define CONFIG_DEFAULTHEIGHTCOLORMAPFILENAME "HeightColorMap.cpt"
-
-#endif
+void main()
+	{
+	/* Calculate the old and new bathymetry elevations at the center of this cell: */
+	float b=(texture2DRect(bathymetrySampler,vec2(gl_FragCoord.x-1.0,gl_FragCoord.y-1.0)).r+
+	         texture2DRect(bathymetrySampler,vec2(gl_FragCoord.x,gl_FragCoord.y-1.0)).r+
+	         texture2DRect(bathymetrySampler,vec2(gl_FragCoord.x-1.0,gl_FragCoord.y)).r+
+	         texture2DRect(bathymetrySampler,vec2(gl_FragCoord.xy)).r)*0.25;
+	
+	/* Get the new quantity at the cell center: */
+	vec3 qNew=texture2DRect(newQuantitySampler,gl_FragCoord.xy).rgb;
+	
+	/* Adjust the water surface height: */
+	gl_FragColor=vec4(max(qNew.x,b),qNew.yz,0.0);
+	}

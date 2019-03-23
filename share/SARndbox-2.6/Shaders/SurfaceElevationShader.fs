@@ -1,6 +1,7 @@
 /***********************************************************************
-Config - Configuration header file for the Augmented Reality Sandbox.
-Copyright (c) 2014-2017 Oliver Kreylos
+SurfaceElevationShader - Shader to render the elevation of a surface
+relative to a plane.
+Copyright (c) 2012-2014 Oliver Kreylos
 
 This file is part of the Augmented Reality Sandbox (SARndbox).
 
@@ -19,15 +20,10 @@ with the Augmented Reality Sandbox; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ***********************************************************************/
 
-#ifndef CONFIG_INCLUDED
-#define CONFIG_INCLUDED
+varying float elevation; // Elevation relative to base plane
 
-#define CONFIG_CONFIGDIR "/home/patrick/src/SARndbox-2.6/etc/SARndbox-2.6"
-#define CONFIG_SHADERDIR "/home/patrick/src/SARndbox-2.6/share/SARndbox-2.6/Shaders"
-
-#define CONFIG_DEFAULTCONFIGFILENAME "SARndbox.cfg"
-#define CONFIG_DEFAULTBOXLAYOUTFILENAME "BoxLayout.txt"
-#define CONFIG_DEFAULTPROJECTIONMATRIXFILENAME "ProjectorMatrix.dat"
-#define CONFIG_DEFAULTHEIGHTCOLORMAPFILENAME "HeightColorMap.cpt"
-
-#endif
+void main()
+	{
+	/* Write the elevation directly into the frame buffer: */
+	gl_FragColor=vec4(elevation,0.0,0.0,1.0);
+	}
